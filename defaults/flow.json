@@ -1,1 +1,1140 @@
-[{"id":"b1b11140.4e4ef","type":"inject","name":"","topic":"","payload":"Hello Node-RED!","payloadType":"string","repeat":"","crontab":"","once":false,"x":141,"y":61,"z":"a09be5e0.5f6418","wires":[["f2f2649a.0d0d98"]]},{"id":"f2f2649a.0d0d98","type":"debug","name":"","active":true,"console":"false","complete":"false","x":401,"y":87,"z":"a09be5e0.5f6418","wires":[]}]
+[
+    {
+        "id": "85f79a9c.7099c8",
+        "type": "tab",
+        "label": "hardware"
+    },
+    {
+        "id": "7359074f.b25d58",
+        "type": "tab",
+        "label": "DevSimulator"
+    },
+    {
+        "id": "310c4779.9d3fc8",
+        "type": "tab",
+        "label": "UI-setup"
+    },
+    {
+        "id": "14e9b509.e9c37b",
+        "type": "ui_group",
+        "z": "",
+        "name": "Welcome Page",
+        "tab": "601814fb.b02cdc",
+        "disp": true,
+        "width": "6"
+    },
+    {
+        "id": "601814fb.b02cdc",
+        "type": "ui_tab",
+        "z": "",
+        "name": "Device Monitor",
+        "icon": "dashboard"
+    },
+    {
+        "id": "4ce26c07.7552f4",
+        "type": "ui_base",
+        "theme": {
+            "name": "theme-dark",
+            "lightTheme": {
+                "default": "#0094CE",
+                "baseColor": "#85a6e0",
+                "baseFont": "Helvetica Neue",
+                "edited": true,
+                "reset": false
+            },
+            "darkTheme": {
+                "default": "#097479",
+                "baseColor": "#61a66a",
+                "baseFont": "Helvetica Neue",
+                "edited": true,
+                "reset": false
+            },
+            "customTheme": {
+                "name": "MyTheme",
+                "default": "#4B7930",
+                "baseColor": "#4B7930",
+                "baseFont": "Helvetica Neue",
+                "reset": false
+            },
+            "themeState": {
+                "base-color": {
+                    "default": "#61a66a",
+                    "value": "#61a66a",
+                    "edited": true
+                },
+                "page-titlebar-backgroundColor": {
+                    "value": "#61a66a",
+                    "edited": false
+                },
+                "page-backgroundColor": {
+                    "value": "#fafafa",
+                    "edited": false
+                },
+                "page-sidebar-backgroundColor": {
+                    "value": "#ffffff",
+                    "edited": true
+                },
+                "group-textColor": {
+                    "value": "#000000",
+                    "edited": false
+                },
+                "group-borderColor": {
+                    "value": "#ffffff",
+                    "edited": true
+                },
+                "group-backgroundColor": {
+                    "value": "#ffffff",
+                    "edited": true
+                },
+                "widget-textColor": {
+                    "value": "#111111",
+                    "edited": false
+                },
+                "widget-backgroundColor": {
+                    "value": "#61a66a",
+                    "edited": false
+                },
+                "widget-borderColor": {
+                    "value": "#ffffff",
+                    "edited": true
+                }
+            }
+        }
+    },
+    {
+        "id": "9785d9be.6282f8",
+        "type": "ui_tab",
+        "z": "",
+        "name": "Setup",
+        "icon": "dashboard"
+    },
+    {
+        "id": "c5a8e50a.a23668",
+        "type": "ui_group",
+        "z": "",
+        "name": "Device Setup",
+        "tab": "9785d9be.6282f8",
+        "disp": true,
+        "width": "6"
+    },
+    {
+        "id": "5afffb9d.58b8a4",
+        "type": "websocket-listener",
+        "z": "",
+        "path": "/ws/simple",
+        "wholemsg": "false"
+    },
+    {
+        "id": "bfe1de2f.c3c09",
+        "type": "http request",
+        "z": "310c4779.9d3fc8",
+        "name": "req",
+        "method": "use",
+        "ret": "obj",
+        "url": "",
+        "tls": "",
+        "x": 425,
+        "y": 319,
+        "wires": [
+            [
+                "565e87bf.1a4f68"
+            ]
+        ]
+    },
+    {
+        "id": "f8faaace.b8a138",
+        "type": "function",
+        "z": "310c4779.9d3fc8",
+        "name": "get flows",
+        "func": "var apiurl = global.get(\"apiurl\") || \"api url not defined\";\n\ndelete msg.headers;\ndelete msg.payload;\nmsg.method = 'GET';\n\nmsg.url = apiurl + \"flows\";\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 297,
+        "y": 320,
+        "wires": [
+            [
+                "bfe1de2f.c3c09"
+            ]
+        ]
+    },
+    {
+        "id": "565e87bf.1a4f68",
+        "type": "function",
+        "z": "310c4779.9d3fc8",
+        "name": "id for hardware tab",
+        "func": "var a = msg.payload;\nvar id = \"error: id not found\";\n\na.forEach( x => { \n    if(x.type === 'tab' && x.label === 'hardware' ) \n        id= x.id ;});\n\nflow.set('hardware_tab', id);\n\nmsg.payload = id;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 585.5,
+        "y": 319,
+        "wires": [
+            [
+                "e74195f.1d2ab68",
+                "adcbb149.4f464"
+            ]
+        ]
+    },
+    {
+        "id": "e74195f.1d2ab68",
+        "type": "function",
+        "z": "310c4779.9d3fc8",
+        "name": "get hw flow",
+        "func": "var apiurl = global.get(\"apiurl\") || \"api url not defined\";\n\n\nvar hw_id = flow.get('hardware_tab') || 0;\nmsg.url = apiurl + \"flow/\" + hw_id;\ndelete msg.headers;\n\nmsg.method = 'GET';\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 288.5,
+        "y": 387,
+        "wires": [
+            [
+                "9856dcbe.4c473"
+            ]
+        ]
+    },
+    {
+        "id": "9856dcbe.4c473",
+        "type": "http request",
+        "z": "310c4779.9d3fc8",
+        "name": "req",
+        "method": "use",
+        "ret": "obj",
+        "url": "",
+        "tls": "",
+        "x": 431.5,
+        "y": 388,
+        "wires": [
+            [
+                "f6a88c24.fb2ab"
+            ]
+        ]
+    },
+    {
+        "id": "9932a065.8d2a2",
+        "type": "function",
+        "z": "310c4779.9d3fc8",
+        "name": "prep",
+        "func": "var apiurl = global.get(\"apiurl\") || \"api url not defined\";\n\n\ndelete msg.headers;\n\nmsg.method = 'PUT';\n\nvar hw_id = flow.get('hardware_tab') || 0;\nvar desiredDeviceId = flow.get('desiredDeviceId');\n\nmsg.url = apiurl + \"flow/\" + hw_id;\n\nmsg.payload = \n{\n  \"id\": \"f482e74b.b2c8a8\",\n  \"label\": \"hardware\",\n  \"nodes\": [\n    {\n      \"id\": \"568ff344.79209c\",\n      \"type\": \"ibmiot in\",\n      \"z\": \"f482e74b.b2c8a8\",\n      \"authentication\": \"quickstart\",\n      \"apiKey\": \"\",\n      \"inputType\": \"evt\",\n      \"deviceId\": desiredDeviceId,\n      \"applicationId\": \"\",\n      \"deviceType\": \"+\",\n      \"eventType\": \"+\",\n      \"commandType\": \"\",\n      \"format\": \"json\",\n      \"name\": \"IBM IoT\",\n      \"service\": \"quickstart\",\n      \"allDevices\": \"\",\n      \"allApplications\": \"\",\n      \"allDeviceTypes\": true,\n      \"allEvents\": true,\n      \"allCommands\": \"\",\n      \"allFormats\": \"\",\n      \"qos\": 0,\n      \"x\": 236.5,\n      \"y\": 200,\n      \"wires\": [\n        [\n          \"d2d1f8f3.abd0a8\"\n        ]\n      ]\n    },\n    {\n      \"id\": \"d2d1f8f3.abd0a8\",\n      \"type\": \"link out\",\n      \"z\": \"f482e74b.b2c8a8\",\n      \"name\": \"\",\n      \"links\": [],\n      \"x\": 339.5,\n      \"y\": 200\n    },\n    {\n      \"id\": \"a10deaa.7e00e18\",\n      \"type\": \"comment\",\n      \"z\": \"f482e74b.b2c8a8\",\n      \"name\": \"WARNING: DO NOT CHANGE THIS PAGE MANUALLY\",\n      \"info\": \"\",\n      \"x\": 332.5,\n      \"y\": 141,\n      \"wires\": []\n    }\n  ]\n}\n;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 326,
+        "y": 149,
+        "wires": [
+            [
+                "9617449.68510b8"
+            ]
+        ]
+    },
+    {
+        "id": "9617449.68510b8",
+        "type": "http request",
+        "z": "310c4779.9d3fc8",
+        "name": "PUT DevId",
+        "method": "use",
+        "ret": "obj",
+        "url": "",
+        "tls": "",
+        "x": 484,
+        "y": 149,
+        "wires": [
+            [
+                "a6402964.dadc68",
+                "f8faaace.b8a138"
+            ]
+        ]
+    },
+    {
+        "id": "a6402964.dadc68",
+        "type": "debug",
+        "z": "310c4779.9d3fc8",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "false",
+        "x": 711,
+        "y": 151,
+        "wires": []
+    },
+    {
+        "id": "f6a88c24.fb2ab",
+        "type": "function",
+        "z": "310c4779.9d3fc8",
+        "name": "parse curr devid",
+        "func": "var a = msg.payload.nodes;\nvar idx = null;\nmsg.payload.ok = false;\n\na.forEach( (x, index) => { \n    if(x.type === 'ibmiot in' && x.service === 'quickstart' ) \n    {msg.payload.ok = true; idx = index; }});\n  \n    \nvar currentDeviceId = a[idx].deviceId || \"error\";\n\nflow.set('currentDeviceId', currentDeviceId);\n\nmsg.payload = {};\nmsg.payload = currentDeviceId;\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 578.5,
+        "y": 389,
+        "wires": [
+            [
+                "2e62cc30.85fd74",
+                "a3de53d5.5064b",
+                "f747c149.c3cd3"
+            ]
+        ]
+    },
+    {
+        "id": "2e62cc30.85fd74",
+        "type": "ui_text",
+        "z": "310c4779.9d3fc8",
+        "group": "c5a8e50a.a23668",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "show current DevId",
+        "label": "Current Device ID",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 685,
+        "y": 484,
+        "wires": []
+    },
+    {
+        "id": "a7acbaee.e38b88",
+        "type": "debug",
+        "z": "310c4779.9d3fc8",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "false",
+        "x": 519,
+        "y": 95,
+        "wires": []
+    },
+    {
+        "id": "1def074c.150639",
+        "type": "function",
+        "z": "310c4779.9d3fc8",
+        "name": "save desired",
+        "func": "\nflow.set('desiredDeviceId', msg.payload.desiredCode);\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 351,
+        "y": 95,
+        "wires": [
+            [
+                "a7acbaee.e38b88",
+                "9932a065.8d2a2"
+            ]
+        ]
+    },
+    {
+        "id": "d11d3daf.d0bcc",
+        "type": "ui_form",
+        "z": "310c4779.9d3fc8",
+        "name": "set DeviceId",
+        "label": "Device ID (MAC Address)",
+        "group": "c5a8e50a.a23668",
+        "order": 4,
+        "width": "0",
+        "height": "0",
+        "options": [
+            {
+                "label": "enter the device id e.g 1234ABCD",
+                "value": "desiredCode",
+                "type": "text",
+                "required": true
+            }
+        ],
+        "formValue": {
+            "desiredCode": ""
+        },
+        "payload": "",
+        "topic": "",
+        "x": 168.5,
+        "y": 92,
+        "wires": [
+            [
+                "1def074c.150639"
+            ]
+        ]
+    },
+    {
+        "id": "a3de53d5.5064b",
+        "type": "function",
+        "z": "310c4779.9d3fc8",
+        "name": "",
+        "func": "\nmsg.devId = msg.payload;\nmsg.payload = \"https://quickstart.internetofthings.ibmcloud.com/#/device/\" + msg.devId + \"/sensor/\";\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 572.5,
+        "y": 532,
+        "wires": [
+            [
+                "f063cbad.0c7fd8"
+            ]
+        ]
+    },
+    {
+        "id": "f063cbad.0c7fd8",
+        "type": "ui_template",
+        "z": "310c4779.9d3fc8",
+        "group": "c5a8e50a.a23668",
+        "name": "show IoT url",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "format": "<!DOCTYPE html>\n\n<p><a href=\"{{msg.payload}}\" target=\"_blank\">View Device {{msg.devId}} in Watson IoT</a></p><br>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "x": 742,
+        "y": 531,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "adcbb149.4f464",
+        "type": "debug",
+        "z": "310c4779.9d3fc8",
+        "name": "Hardware Tab",
+        "active": false,
+        "console": "false",
+        "complete": "payload",
+        "x": 808,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "d8354b4a.603fa8",
+        "type": "ui_dropdown",
+        "z": "7359074f.b25d58",
+        "name": "Sim Scenario",
+        "label": "Simulation",
+        "group": "14e9b509.e9c37b",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "options": [
+            {
+                "label": "Ambient (20C)",
+                "value": 20,
+                "type": "num"
+            },
+            {
+                "label": "Cold (-5C)",
+                "value": -5,
+                "type": "num"
+            },
+            {
+                "label": "Hot (35C)",
+                "value": 35,
+                "type": "num"
+            }
+        ],
+        "payload": "",
+        "topic": "",
+        "x": 250,
+        "y": 231,
+        "wires": [
+            [
+                "42e675bc.ee4fac"
+            ]
+        ]
+    },
+    {
+        "id": "42e675bc.ee4fac",
+        "type": "function",
+        "z": "7359074f.b25d58",
+        "name": "target",
+        "func": "if (typeof(msg.payload) ===\"number\" ){\n    context.set('target', msg.payload);\n    return;\n}\n\nvar counter = context.get('counter') || 25;\nvar target = context.get('target') || 20;\n\nvar diff = target - counter;\n\nif (diff !== 0){\n    counter = counter + (diff * 0.01);\n    context.set('counter', counter);\n\n}\n\nmsg.temp= counter;\nmsg.target = target;\nmsg.payload = 1;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 246.5,
+        "y": 318,
+        "wires": [
+            [
+                "9a43687.e942198"
+            ]
+        ]
+    },
+    {
+        "id": "eceb3700.c54dd8",
+        "type": "inject",
+        "z": "7359074f.b25d58",
+        "name": "",
+        "topic": "",
+        "payload": "tick",
+        "payloadType": "str",
+        "repeat": "0.25",
+        "crontab": "",
+        "once": false,
+        "x": 85,
+        "y": 317,
+        "wires": [
+            [
+                "42e675bc.ee4fac"
+            ]
+        ]
+    },
+    {
+        "id": "e7f1b975.cb6e68",
+        "type": "debug",
+        "z": "7359074f.b25d58",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "payload",
+        "x": 572.5,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "4a418b21.4baa54",
+        "type": "ui_chart",
+        "z": "7359074f.b25d58",
+        "name": "Current Temp Chart",
+        "group": "14e9b509.e9c37b",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "label": "Temperature",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "Waiting for Data",
+        "ymin": "-3",
+        "ymax": "37",
+        "removeOlder": 1,
+        "removeOlderPoints": "1000",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "x": 847,
+        "y": 262,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "14339d65.39fd83",
+        "type": "inject",
+        "z": "7359074f.b25d58",
+        "name": "default",
+        "topic": "",
+        "payload": "20",
+        "payloadType": "num",
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "x": 101.5,
+        "y": 229,
+        "wires": [
+            [
+                "d8354b4a.603fa8"
+            ]
+        ]
+    },
+    {
+        "id": "e0b9c648.140818",
+        "type": "inject",
+        "z": "7359074f.b25d58",
+        "name": "reset chart",
+        "topic": "",
+        "payload": "[ ]",
+        "payloadType": "str",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 820.5,
+        "y": 191,
+        "wires": [
+            [
+                "84b96b17.02d3a8"
+            ]
+        ]
+    },
+    {
+        "id": "9a43687.e942198",
+        "type": "npm",
+        "z": "7359074f.b25d58",
+        "name": "GaussianDistr",
+        "func": "// NPM module exposed as variable, npm_module\n\nmsg.payload = npm_module.rvnorm(1, 0, 6);\n\nreturn msg.payload;\n//return npm_module(msg.payload);",
+        "npm_module": "randgen",
+        "module_style": "function",
+        "msg_payload": "return_val",
+        "function_name": "rnorm",
+        "x": 256,
+        "y": 409,
+        "wires": [
+            [
+                "1b3d0fe2.0ae6f"
+            ]
+        ]
+    },
+    {
+        "id": "1b3d0fe2.0ae6f",
+        "type": "function",
+        "z": "7359074f.b25d58",
+        "name": "normal",
+        "func": "msg.normal = msg.payload/10;\n\nvar res =  msg.normal + msg.temp;\n\nmsg.payload = parseFloat(res.toFixed(1));\n\nvar isSimEnabled = global.get(\"simulation\") || false;\n\nif (isSimEnabled) return msg;\nelse return null;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 411.5,
+        "y": 409,
+        "wires": [
+            [
+                "4a418b21.4baa54",
+                "e7f1b975.cb6e68",
+                "10988400.bf0e4c",
+                "70863918.ae63d8"
+            ]
+        ]
+    },
+    {
+        "id": "10988400.bf0e4c",
+        "type": "ui_gauge",
+        "z": "7359074f.b25d58",
+        "name": "Current Temp Gauge",
+        "group": "14e9b509.e9c37b",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Current Pack Temperature",
+        "label": "C",
+        "format": "{{value}}",
+        "min": "-20",
+        "max": "40",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "x": 858,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "70863918.ae63d8",
+        "type": "function",
+        "z": "7359074f.b25d58",
+        "name": "pack",
+        "func": "var t = msg.payload;\nmsg.payload = {};\nmsg.payload.temp = t;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 533.5,
+        "y": 113,
+        "wires": [
+            [
+                "319eb72d.554ef8"
+            ]
+        ]
+    },
+    {
+        "id": "c72a238e.92ed5",
+        "type": "debug",
+        "z": "7359074f.b25d58",
+        "name": "Hardware Reading",
+        "active": false,
+        "console": "false",
+        "complete": "payload",
+        "x": 550,
+        "y": 43,
+        "wires": []
+    },
+    {
+        "id": "319eb72d.554ef8",
+        "type": "delay",
+        "z": "7359074f.b25d58",
+        "name": "",
+        "pauseType": "rate",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": true,
+        "x": 673,
+        "y": 111,
+        "wires": [
+            [
+                "613ed2f1.cb2c1c"
+            ]
+        ]
+    },
+    {
+        "id": "3f2a3790.550268",
+        "type": "function",
+        "z": "7359074f.b25d58",
+        "name": "convert",
+        "func": "var sensorChoice = global.get('sensorType');\n\nif (sensorChoice === 'objectTemp' ){\n    var t = msg.payload.d.objectTemp;\n}\nelse {\n    var t = msg.payload.d.ambientTemp;\n}\n\nmsg.payload = {};\nmsg.payload = parseFloat(t);\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 376,
+        "y": 113,
+        "wires": [
+            [
+                "70863918.ae63d8",
+                "c72a238e.92ed5",
+                "8a9d85e0.381ef8"
+            ]
+        ]
+    },
+    {
+        "id": "d4933772.514e78",
+        "type": "link in",
+        "z": "7359074f.b25d58",
+        "name": "",
+        "links": [
+            "48ce24a7.68b3ac"
+        ],
+        "x": 267.5,
+        "y": 113,
+        "wires": [
+            [
+                "3f2a3790.550268"
+            ]
+        ]
+    },
+    {
+        "id": "d1b28282.89d72",
+        "type": "comment",
+        "z": "7359074f.b25d58",
+        "name": "Device Data",
+        "info": "",
+        "x": 208.5,
+        "y": 65,
+        "wires": []
+    },
+    {
+        "id": "a838a1c8.483be",
+        "type": "comment",
+        "z": "7359074f.b25d58",
+        "name": "Simulated",
+        "info": "",
+        "x": 75,
+        "y": 170,
+        "wires": []
+    },
+    {
+        "id": "84b96b17.02d3a8",
+        "type": "function",
+        "z": "7359074f.b25d58",
+        "name": "reset chart",
+        "func": "\nmsg.payload = [];\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 827.5,
+        "y": 225,
+        "wires": [
+            [
+                "4a418b21.4baa54",
+                "10988400.bf0e4c"
+            ]
+        ]
+    },
+    {
+        "id": "613ed2f1.cb2c1c",
+        "type": "websocket out",
+        "z": "7359074f.b25d58",
+        "name": "",
+        "server": "5afffb9d.58b8a4",
+        "client": "",
+        "x": 841.5,
+        "y": 111,
+        "wires": []
+    },
+    {
+        "id": "9e939588.589e18",
+        "type": "ui_button",
+        "z": "7359074f.b25d58",
+        "name": "",
+        "group": "14e9b509.e9c37b",
+        "order": 5,
+        "width": "1",
+        "height": "1",
+        "label": "CLR",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "",
+        "x": 650.5,
+        "y": 222,
+        "wires": [
+            [
+                "84b96b17.02d3a8"
+            ]
+        ]
+    },
+    {
+        "id": "ea1ccf36.ee0ed",
+        "type": "ui_text",
+        "z": "310c4779.9d3fc8",
+        "group": "c5a8e50a.a23668",
+        "order": 5,
+        "width": "6",
+        "height": "2",
+        "name": "",
+        "label": "Last Message Received On:",
+        "format": "{{msg.payload}}",
+        "layout": "col-center",
+        "x": 567.5,
+        "y": 608,
+        "wires": []
+    },
+    {
+        "id": "cbe85d06.9b583",
+        "type": "link in",
+        "z": "310c4779.9d3fc8",
+        "name": "",
+        "links": [
+            "48ce24a7.68b3ac"
+        ],
+        "x": 216.5,
+        "y": 605,
+        "wires": [
+            [
+                "dd43be09.8cbbe",
+                "80581d35.c19a2",
+                "34998019.56c97"
+            ]
+        ]
+    },
+    {
+        "id": "dd43be09.8cbbe",
+        "type": "function",
+        "z": "310c4779.9d3fc8",
+        "name": "",
+        "func": "msg.payload = new Date().toString();\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 322,
+        "y": 608,
+        "wires": [
+            [
+                "ea1ccf36.ee0ed"
+            ]
+        ]
+    },
+    {
+        "id": "ed88a2d5.6f467",
+        "type": "ui_dropdown",
+        "z": "310c4779.9d3fc8",
+        "name": "",
+        "label": "Select Sensor",
+        "group": "c5a8e50a.a23668",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "options": [
+            {
+                "label": "Ambient Temp",
+                "value": "ambientTemp",
+                "type": "str"
+            },
+            {
+                "label": "Object Temp",
+                "value": "objectTemp",
+                "type": "str"
+            }
+        ],
+        "payload": "",
+        "topic": "",
+        "x": 453.5,
+        "y": 734,
+        "wires": [
+            [
+                "16281290.2a3bfd"
+            ]
+        ]
+    },
+    {
+        "id": "bb4cc2e7.bfd45",
+        "type": "inject",
+        "z": "310c4779.9d3fc8",
+        "name": "init",
+        "topic": "",
+        "payload": "objectTemp",
+        "payloadType": "str",
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "x": 303,
+        "y": 734,
+        "wires": [
+            [
+                "ed88a2d5.6f467"
+            ]
+        ]
+    },
+    {
+        "id": "16281290.2a3bfd",
+        "type": "function",
+        "z": "310c4779.9d3fc8",
+        "name": "",
+        "func": "global.set('sensorType', msg.payload);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 602,
+        "y": 734,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "5bf90400.01880c",
+        "type": "ui_text",
+        "z": "310c4779.9d3fc8",
+        "group": "c5a8e50a.a23668",
+        "order": 5,
+        "width": "3",
+        "height": "1",
+        "name": "",
+        "label": "Ambient Temp",
+        "format": "{{msg.payload}}",
+        "layout": "row-right",
+        "x": 524,
+        "y": 641,
+        "wires": []
+    },
+    {
+        "id": "399f3654.131dea",
+        "type": "ui_text",
+        "z": "310c4779.9d3fc8",
+        "group": "c5a8e50a.a23668",
+        "order": 6,
+        "width": "3",
+        "height": "1",
+        "name": "",
+        "label": "Object Temp",
+        "format": "{{msg.payload}}",
+        "layout": "row-right",
+        "x": 509,
+        "y": 676,
+        "wires": []
+    },
+    {
+        "id": "80581d35.c19a2",
+        "type": "function",
+        "z": "310c4779.9d3fc8",
+        "name": "ambient",
+        "func": "\nvar t = msg.payload.d.ambientTemp;\n\nmsg.payload = {};\nmsg.payload = parseFloat(t);\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 325,
+        "y": 646,
+        "wires": [
+            [
+                "5bf90400.01880c"
+            ]
+        ]
+    },
+    {
+        "id": "34998019.56c97",
+        "type": "function",
+        "z": "310c4779.9d3fc8",
+        "name": "object",
+        "func": "\nvar t = msg.payload.d.objectTemp;\n\nmsg.payload = {};\nmsg.payload = parseFloat(t);\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 317,
+        "y": 679,
+        "wires": [
+            [
+                "399f3654.131dea"
+            ]
+        ]
+    },
+    {
+        "id": "c09fac0f.d4ee5",
+        "type": "ui_switch",
+        "z": "7359074f.b25d58",
+        "name": "",
+        "label": "Enable Simulation",
+        "group": "14e9b509.e9c37b",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "topic": "",
+        "style": "",
+        "onvalue": "true",
+        "onvalueType": "bool",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "false",
+        "offvalueType": "bool",
+        "officon": "",
+        "offcolor": "",
+        "x": 270,
+        "y": 164,
+        "wires": [
+            [
+                "5dcb9561.f34d1c"
+            ]
+        ]
+    },
+    {
+        "id": "5dcb9561.f34d1c",
+        "type": "function",
+        "z": "7359074f.b25d58",
+        "name": "mem",
+        "func": "global.set(\"simulation\", msg.payload);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 388,
+        "y": 202,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "8a9d85e0.381ef8",
+        "type": "function",
+        "z": "7359074f.b25d58",
+        "name": "",
+        "func": "var isSimEnabled = global.get(\"simulation\") || false;\n\nif (!isSimEnabled) return msg;\nelse return null;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 567,
+        "y": 274,
+        "wires": [
+            [
+                "4a418b21.4baa54",
+                "10988400.bf0e4c"
+            ]
+        ]
+    },
+    {
+        "id": "8e1a733b.e45db",
+        "type": "link out",
+        "z": "7359074f.b25d58",
+        "name": "",
+        "links": [],
+        "x": 533.5,
+        "y": 184,
+        "wires": []
+    },
+    {
+        "id": "43aa917e.ce1d9",
+        "type": "inject",
+        "z": "310c4779.9d3fc8",
+        "name": "init",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 83.5,
+        "y": 34,
+        "wires": [
+            [
+                "9dc4284f.90f458"
+            ]
+        ]
+    },
+    {
+        "id": "9dc4284f.90f458",
+        "type": "function",
+        "z": "310c4779.9d3fc8",
+        "name": "globals",
+        "func": "var apiurl = \"http://hardware-proxy.mybluemix.net/red/\";\n\nglobal.set(\"apiurl\", apiurl);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 230,
+        "y": 34,
+        "wires": [
+            [
+                "337599d1.b1f8d6"
+            ]
+        ]
+    },
+    {
+        "id": "337599d1.b1f8d6",
+        "type": "link out",
+        "z": "310c4779.9d3fc8",
+        "name": "init complete",
+        "links": [
+            "f0df9f43.930e9"
+        ],
+        "x": 323.5,
+        "y": 34,
+        "wires": []
+    },
+    {
+        "id": "f0df9f43.930e9",
+        "type": "link in",
+        "z": "310c4779.9d3fc8",
+        "name": "get dev id",
+        "links": [
+            "337599d1.b1f8d6"
+        ],
+        "x": 172.5,
+        "y": 319,
+        "wires": [
+            [
+                "f8faaace.b8a138"
+            ]
+        ]
+    },
+    {
+        "id": "f747c149.c3cd3",
+        "type": "debug",
+        "z": "310c4779.9d3fc8",
+        "name": "Stored Device Id",
+        "active": false,
+        "console": "false",
+        "complete": "payload",
+        "x": 789,
+        "y": 386,
+        "wires": []
+    },
+    {
+        "id": "ef2fb5cb.9f5a08",
+        "type": "ibmiot in",
+        "z": "85f79a9c.7099c8",
+        "authentication": "quickstart",
+        "apiKey": "",
+        "inputType": "evt",
+        "deviceId": "b0b448bf4b84",
+        "applicationId": "",
+        "deviceType": "+",
+        "eventType": "+",
+        "commandType": "",
+        "format": "json",
+        "name": "IBM IoT",
+        "service": "quickstart",
+        "allDevices": "",
+        "allApplications": "",
+        "allDeviceTypes": true,
+        "allEvents": true,
+        "allCommands": "",
+        "allFormats": "",
+        "qos": 0,
+        "x": 236.5,
+        "y": 200,
+        "wires": [
+            [
+                "9fa498ac.709e78"
+            ]
+        ]
+    },
+    {
+        "id": "9fa498ac.709e78",
+        "type": "link out",
+        "z": "85f79a9c.7099c8",
+        "name": "",
+        "links": [],
+        "x": 339.5,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "d262a234.b8292",
+        "type": "comment",
+        "z": "85f79a9c.7099c8",
+        "name": "WARNING: DO NOT CHANGE THIS PAGE MANUALLY",
+        "info": "",
+        "x": 332.5,
+        "y": 141,
+        "wires": []
+    }
+]
