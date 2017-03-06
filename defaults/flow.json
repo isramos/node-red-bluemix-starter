@@ -1,10 +1,5 @@
 [
     {
-        "id": "f6943f15.08708",
-        "type": "tab",
-        "label": "hardware"
-    },
-    {
         "id": "991b8c7b.c4cd7",
         "type": "tab",
         "label": "DevSimulator"
@@ -13,6 +8,11 @@
         "id": "66772a78.2a2d54",
         "type": "tab",
         "label": "UI-setup"
+    },
+    {
+        "id": "f6943f15.08708",
+        "type": "tab",
+        "label": "hardware"
     },
     {
         "id": "7840aecf.dc143",
@@ -39,7 +39,7 @@
                 "default": "#0094CE",
                 "baseColor": "#0094CE",
                 "baseFont": "Helvetica Neue",
-                "edited": false,
+                "edited": true,
                 "reset": false
             },
             "darkTheme": {
@@ -139,6 +139,22 @@
         "wholemsg": "false"
     },
     {
+        "id": "f5495b62.7dc9d8",
+        "type": "ui_group",
+        "z": "",
+        "name": "Default",
+        "tab": "df4d1feb.50d3a",
+        "disp": true,
+        "width": "6"
+    },
+    {
+        "id": "df4d1feb.50d3a",
+        "type": "ui_tab",
+        "z": "",
+        "name": "Home",
+        "icon": "dashboard"
+    },
+    {
         "id": "6a4b2fc6.4652a",
         "type": "http request",
         "z": "66772a78.2a2d54",
@@ -147,8 +163,8 @@
         "ret": "obj",
         "url": "",
         "tls": "",
-        "x": 425,
-        "y": 319,
+        "x": 378,
+        "y": 419,
         "wires": [
             [
                 "73cef14.2fb4e1"
@@ -163,8 +179,8 @@
         "func": "var apiurl = global.get(\"apiurl\") || \"api url not defined\";\n\ndelete msg.headers;\ndelete msg.payload;\nmsg.method = 'GET';\n\nmsg.url = apiurl + \"flows\";\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 297,
-        "y": 320,
+        "x": 250,
+        "y": 420,
         "wires": [
             [
                 "6a4b2fc6.4652a"
@@ -179,8 +195,8 @@
         "func": "var a = msg.payload;\nvar id = \"error: id not found\";\n\na.forEach( x => { \n    if(x.type === 'tab' && x.label === 'hardware' ) \n        id= x.id ;});\n\nflow.set('hardware_tab', id);\n\nmsg.payload = id;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 585.5,
-        "y": 319,
+        "x": 538.5,
+        "y": 419,
         "wires": [
             [
                 "5edb8108.e604a",
@@ -196,8 +212,8 @@
         "func": "var apiurl = global.get(\"apiurl\") || \"api url not defined\";\n\n\nvar hw_id = flow.get('hardware_tab') || 0;\nmsg.url = apiurl + \"flow/\" + hw_id;\ndelete msg.headers;\n\nmsg.method = 'GET';\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 288.5,
-        "y": 387,
+        "x": 241.5,
+        "y": 487,
         "wires": [
             [
                 "7932373a.19abf8"
@@ -213,8 +229,8 @@
         "ret": "obj",
         "url": "",
         "tls": "",
-        "x": 431.5,
-        "y": 388,
+        "x": 384.5,
+        "y": 488,
         "wires": [
             [
                 "516a7ed0.d1e2d",
@@ -230,8 +246,8 @@
         "func": "delete msg.headers;\nvar apiurl = global.get(\"apiurl\") || \"api url not defined\";\nvar hardwareFlow = flow.get('hardwareFlow');\nvar hw_id = flow.get('hardware_tab') || 0;\nvar desiredDeviceId = flow.get('desiredDeviceId');\n\nmsg.url = apiurl + \"flow/\" + hw_id;\nmsg.method = 'PUT';\n\nhardwareFlow.nodes.forEach ( n => { \n    if(n.type === 'ibmiot in'){\n        n.deviceId = desiredDeviceId;    \n    }});\n\nmsg.payload = hardwareFlow;\n  \nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 326,
-        "y": 149,
+        "x": 279,
+        "y": 249,
         "wires": [
             [
                 "98f409be.4232b8",
@@ -249,8 +265,8 @@
         "ret": "obj",
         "url": "",
         "tls": "",
-        "x": 484,
-        "y": 149,
+        "x": 437,
+        "y": 249,
         "wires": [
             [
                 "286ad470.90bd4c",
@@ -266,8 +282,8 @@
         "func": "flow.set('hardwareFlow', msg.payload);\nvar a = msg.payload.nodes;\n\nvar idx = null;\n\n\na.forEach( (x, index) => { \n    if(x.type === 'ibmiot in' && x.service === 'quickstart' ) \n        idx = index; \n    });\n  \n    \nvar currentDeviceId = a[idx].deviceId || \"error\";\n\nflow.set('currentDeviceId', currentDeviceId);\n\nmsg.payload = {};\nmsg.payload = currentDeviceId;\n\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 578.5,
-        "y": 389,
+        "x": 531.5,
+        "y": 489,
         "wires": [
             [
                 "9930dd9e.8dbe3",
@@ -288,8 +304,8 @@
         "label": "Current Device ID",
         "format": "{{msg.payload}}",
         "layout": "row-spread",
-        "x": 685,
-        "y": 484,
+        "x": 638,
+        "y": 584,
         "wires": []
     },
     {
@@ -300,8 +316,8 @@
         "active": false,
         "console": "false",
         "complete": "false",
-        "x": 519,
-        "y": 95,
+        "x": 472,
+        "y": 195,
         "wires": []
     },
     {
@@ -309,46 +325,15 @@
         "type": "function",
         "z": "66772a78.2a2d54",
         "name": "save desired",
-        "func": "\nflow.set('desiredDeviceId', msg.payload.desiredCode);\n\n\nreturn msg;",
+        "func": "\nflow.set('desiredDeviceId', msg.payload.macAddress);\n\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 351,
-        "y": 95,
+        "x": 304,
+        "y": 195,
         "wires": [
             [
                 "1688a18c.d8dbee",
                 "36a6b53e.a0baaa"
-            ]
-        ]
-    },
-    {
-        "id": "c4e58e7a.c80c8",
-        "type": "ui_form",
-        "z": "66772a78.2a2d54",
-        "name": "set DeviceId",
-        "label": "Device ID (MAC Address)",
-        "group": "b1f865dd.9faf58",
-        "order": 4,
-        "width": "0",
-        "height": "0",
-        "options": [
-            {
-                "label": "enter the device id e.g 1234ABCD",
-                "value": "desiredCode",
-                "type": "text",
-                "required": true
-            }
-        ],
-        "formValue": {
-            "desiredCode": ""
-        },
-        "payload": "",
-        "topic": "",
-        "x": 168.5,
-        "y": 92,
-        "wires": [
-            [
-                "9b40f43e.34e568"
             ]
         ]
     },
@@ -360,8 +345,8 @@
         "func": "\nmsg.devId = msg.payload;\nmsg.payload = \"https://quickstart.internetofthings.ibmcloud.com/#/device/\" + msg.devId + \"/sensor/\";\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 572.5,
-        "y": 532,
+        "x": 525.5,
+        "y": 632,
         "wires": [
             [
                 "8fcb76b3.b40328"
@@ -377,11 +362,11 @@
         "order": 3,
         "width": 0,
         "height": 0,
-        "format": "<!DOCTYPE html>\n\n<p><a href=\"{{msg.payload}}\" target=\"_blank\">View Device {{msg.devId}} in Watson IoT</a></p><br>",
+        "format": "<!DOCTYPE html>\n<p><a href=\"{{msg.payload}}\" target=\"_blank\">View {{msg.devId}} in Watson IoT</a></p>",
         "storeOutMessages": true,
         "fwdInMessages": true,
-        "x": 742,
-        "y": 531,
+        "x": 695,
+        "y": 631,
         "wires": [
             []
         ]
@@ -391,11 +376,11 @@
         "type": "debug",
         "z": "66772a78.2a2d54",
         "name": "Hardware Tab",
-        "active": false,
+        "active": true,
         "console": "false",
         "complete": "payload",
-        "x": 808,
-        "y": 320,
+        "x": 839,
+        "y": 421,
         "wires": []
     },
     {
@@ -411,18 +396,18 @@
         "passthru": false,
         "options": [
             {
-                "label": "Ambient (20C)",
-                "value": 20,
+                "label": "Ambient (68F)",
+                "value": 68,
                 "type": "num"
             },
             {
-                "label": "Cold (-5C)",
-                "value": -5,
+                "label": "Cold (40F)",
+                "value": 40,
                 "type": "num"
             },
             {
-                "label": "Hot (35C)",
-                "value": 35,
+                "label": "Hot (95F)",
+                "value": 95,
                 "type": "num"
             }
         ],
@@ -498,12 +483,23 @@
         "xformat": "HH:mm:ss",
         "interpolate": "linear",
         "nodata": "Waiting for Data",
-        "ymin": "-3",
-        "ymax": "37",
+        "ymin": "32",
+        "ymax": "100",
         "removeOlder": 1,
         "removeOlderPoints": "1000",
         "removeOlderUnit": "3600",
         "cutout": 0,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
         "x": 847,
         "y": 262,
         "wires": [
@@ -599,8 +595,8 @@
         "title": "Current Pack Temperature",
         "label": "C",
         "format": "{{value}}",
-        "min": "-20",
-        "max": "40",
+        "min": "32",
+        "max": "100",
         "colors": [
             "#00b500",
             "#e6e600",
@@ -631,7 +627,7 @@
         "type": "debug",
         "z": "991b8c7b.c4cd7",
         "name": "Hardware Reading",
-        "active": false,
+        "active": true,
         "console": "false",
         "complete": "payload",
         "x": 550,
@@ -666,7 +662,7 @@
         "type": "function",
         "z": "991b8c7b.c4cd7",
         "name": "convert",
-        "func": "var sensorChoice = global.get('sensorType');\n\nif (msg.payload.d === undefined)\n    return null;\nif (msg.payload.objectTemp === undefined)\n    return null;    \n    \nif (sensorChoice === 'objectTemp' ){\n    var t = msg.payload.d.objectTemp;\n}\nelse {\n    var t = msg.payload.d.ambientTemp;\n}\n\nmsg.payload = {};\nmsg.payload = parseFloat(t);\n\n\nreturn msg;",
+        "func": "var sensorChoice = global.get('sensorType');\n\nif (sensorChoice === 'objectTemp' ){\n    var t = msg.payload.d.objectTemp;\n}\nelse {\n    var t = msg.payload.d.ambientTemp;\n}\n\nmsg.payload = parseFloat(t.toFixed(1));\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "x": 376,
@@ -772,15 +768,15 @@
         "type": "ui_text",
         "z": "66772a78.2a2d54",
         "group": "b1f865dd.9faf58",
-        "order": 5,
+        "order": 6,
         "width": "6",
         "height": "2",
         "name": "",
         "label": "Last Message Received On:",
         "format": "{{msg.payload}}",
         "layout": "col-center",
-        "x": 567.5,
-        "y": 608,
+        "x": 565.5,
+        "y": 681,
         "wires": []
     },
     {
@@ -791,8 +787,8 @@
         "links": [
             "4d3c25a8.ce27bc"
         ],
-        "x": 216.5,
-        "y": 605,
+        "x": 214.5,
+        "y": 678,
         "wires": [
             [
                 "667f7904.949cb8",
@@ -809,8 +805,8 @@
         "func": "msg.payload = new Date().toString();\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 322,
-        "y": 608,
+        "x": 320,
+        "y": 681,
         "wires": [
             [
                 "46d30f5d.3f7fa"
@@ -842,8 +838,8 @@
         ],
         "payload": "",
         "topic": "",
-        "x": 453.5,
-        "y": 734,
+        "x": 451.5,
+        "y": 807,
         "wires": [
             [
                 "43134ae.ea14db4"
@@ -861,8 +857,8 @@
         "repeat": "",
         "crontab": "",
         "once": true,
-        "x": 303,
-        "y": 734,
+        "x": 301,
+        "y": 807,
         "wires": [
             [
                 "47472262.5c048c"
@@ -877,8 +873,8 @@
         "func": "global.set('sensorType', msg.payload);\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 602,
-        "y": 734,
+        "x": 600,
+        "y": 807,
         "wires": [
             []
         ]
@@ -888,15 +884,15 @@
         "type": "ui_text",
         "z": "66772a78.2a2d54",
         "group": "b1f865dd.9faf58",
-        "order": 5,
+        "order": 7,
         "width": "3",
         "height": "1",
         "name": "",
         "label": "Ambient Temp",
         "format": "{{msg.payload}}",
         "layout": "row-right",
-        "x": 524,
-        "y": 641,
+        "x": 522,
+        "y": 714,
         "wires": []
     },
     {
@@ -904,15 +900,15 @@
         "type": "ui_text",
         "z": "66772a78.2a2d54",
         "group": "b1f865dd.9faf58",
-        "order": 6,
+        "order": 8,
         "width": "3",
         "height": "1",
         "name": "",
         "label": "Object Temp",
         "format": "{{msg.payload}}",
         "layout": "row-right",
-        "x": 509,
-        "y": 676,
+        "x": 507,
+        "y": 749,
         "wires": []
     },
     {
@@ -923,8 +919,8 @@
         "func": "\nvar t = msg.payload.d.ambientTemp;\n\nmsg.payload = {};\nmsg.payload = parseFloat(t);\n\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 325,
-        "y": 646,
+        "x": 323,
+        "y": 719,
         "wires": [
             [
                 "6c528444.a6fc0c"
@@ -939,8 +935,8 @@
         "func": "\nvar t = msg.payload.d.objectTemp;\n\nmsg.payload = {};\nmsg.payload = parseFloat(t);\n\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 317,
-        "y": 679,
+        "x": 315,
+        "y": 752,
         "wires": [
             [
                 "4c0a61b6.95b5a"
@@ -1018,8 +1014,8 @@
         "repeat": "",
         "crontab": "",
         "once": true,
-        "x": 83.5,
-        "y": 34,
+        "x": 104.5,
+        "y": 35,
         "wires": [
             [
                 "d371a4.a0c33e6"
@@ -1034,8 +1030,8 @@
         "func": "var apiurl = \"http://hardware-proxy.mybluemix.net/red/\";\n\nglobal.set(\"apiurl\", apiurl);\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 230,
-        "y": 34,
+        "x": 251,
+        "y": 35,
         "wires": [
             [
                 "7ba4aa5.32a5f54"
@@ -1050,8 +1046,8 @@
         "links": [
             "118e2a19.f43396"
         ],
-        "x": 323.5,
-        "y": 34,
+        "x": 344.5,
+        "y": 35,
         "wires": []
     },
     {
@@ -1062,8 +1058,8 @@
         "links": [
             "7ba4aa5.32a5f54"
         ],
-        "x": 172.5,
-        "y": 319,
+        "x": 125.5,
+        "y": 419,
         "wires": [
             [
                 "286ad470.90bd4c"
@@ -1078,48 +1074,8 @@
         "active": true,
         "console": "false",
         "complete": "payload",
-        "x": 789,
-        "y": 386,
-        "wires": []
-    },
-    {
-        "id": "7acfd23a.e2174c",
-        "type": "ibmiot in",
-        "z": "f6943f15.08708",
-        "authentication": "quickstart",
-        "apiKey": "",
-        "inputType": "evt",
-        "deviceId": "12345",
-        "applicationId": "",
-        "deviceType": "+",
-        "eventType": "+",
-        "commandType": "",
-        "format": "json",
-        "name": "IBM IoT",
-        "service": "quickstart",
-        "allDevices": "",
-        "allApplications": "",
-        "allDeviceTypes": true,
-        "allEvents": true,
-        "allCommands": "",
-        "allFormats": "",
-        "qos": 0,
-        "x": 236.5,
-        "y": 200,
-        "wires": [
-            [
-                "4d3c25a8.ce27bc"
-            ]
-        ]
-    },
-    {
-        "id": "ea6a68b6.c90be8",
-        "type": "comment",
-        "z": "f6943f15.08708",
-        "name": "WARNING: DO NOT CHANGE THIS PAGE MANUALLY",
-        "info": "",
-        "x": 332.5,
-        "y": 141,
+        "x": 742,
+        "y": 486,
         "wires": []
     },
     {
@@ -1133,8 +1089,8 @@
         "repeat": "",
         "crontab": "",
         "once": false,
-        "x": 105.5,
-        "y": 198,
+        "x": 58.5,
+        "y": 298,
         "wires": [
             [
                 "9b40f43e.34e568"
@@ -1149,8 +1105,8 @@
         "active": true,
         "console": "false",
         "complete": "false",
-        "x": 688,
-        "y": 150,
+        "x": 640,
+        "y": 253,
         "wires": []
     },
     {
@@ -1161,8 +1117,8 @@
         "active": true,
         "console": "false",
         "complete": "false",
-        "x": 492,
-        "y": 192,
+        "x": 445,
+        "y": 292,
         "wires": []
     },
     {
@@ -1173,8 +1129,8 @@
         "active": true,
         "console": "false",
         "complete": "false",
-        "x": 468,
-        "y": 444,
+        "x": 421,
+        "y": 544,
         "wires": []
     },
     {
@@ -1185,8 +1141,48 @@
         "active": true,
         "console": "false",
         "complete": "url",
-        "x": 477,
-        "y": 236,
+        "x": 430,
+        "y": 336,
+        "wires": []
+    },
+    {
+        "id": "7acfd23a.e2174c",
+        "type": "ibmiot in",
+        "z": "f6943f15.08708",
+        "authentication": "quickstart",
+        "apiKey": "",
+        "inputType": "evt",
+        "deviceId": "b0b448bf4b84",
+        "applicationId": "",
+        "deviceType": "+",
+        "eventType": "+",
+        "commandType": "",
+        "format": "json",
+        "name": "IBM IoT",
+        "service": "quickstart",
+        "allDevices": "",
+        "allApplications": "",
+        "allDeviceTypes": true,
+        "allEvents": true,
+        "allCommands": "",
+        "allFormats": "",
+        "qos": 0,
+        "x": 191.5,
+        "y": 200,
+        "wires": [
+            [
+                "84db3686.85b328"
+            ]
+        ]
+    },
+    {
+        "id": "ea6a68b6.c90be8",
+        "type": "comment",
+        "z": "f6943f15.08708",
+        "name": "WARNING: DO NOT CHANGE THIS PAGE MANUALLY",
+        "info": "",
+        "x": 332.5,
+        "y": 141,
         "wires": []
     },
     {
@@ -1198,8 +1194,143 @@
             "302c614c.63a9ce",
             "8632f3ca.5f43b"
         ],
-        "x": 339.5,
+        "x": 467.5,
         "y": 200,
+        "wires": []
+    },
+    {
+        "id": "84db3686.85b328",
+        "type": "function",
+        "z": "f6943f15.08708",
+        "name": "C to F",
+        "func": "var sensorChoice = global.get('sensorType');\n\nif (msg.payload.d === undefined)\n    return null;\nif (msg.payload.d.objectTemp === undefined)\n    return null;   \nif (msg.payload.d.ambientTemp === undefined)\n    return null; \n    \n\nvar oT = parseFloat(msg.payload.d.objectTemp) ;\nvar aT = parseFloat(msg.payload.d.ambientTemp);\n\nmsg.payload.d.objectTemp = (oT * 9 / 5 + 32);\nmsg.payload.d.ambientTemp = (aT * 9 / 5 + 32);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 369.5,
+        "y": 201,
+        "wires": [
+            [
+                "4d3c25a8.ce27bc"
+            ]
+        ]
+    },
+    {
+        "id": "97a1f8a2.27b968",
+        "type": "ui_template",
+        "z": "66772a78.2a2d54",
+        "group": "b1f865dd.9faf58",
+        "name": "update MAC address",
+        "order": 5,
+        "width": "6",
+        "height": "1",
+        "format": "<form action=\"/api/ask\">\nDevice MAC Address: <br>\n<input type=\"text\" name=\"macAddress\" required>\n<input type=\"submit\">\n</form> ",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "x": 638,
+        "y": 38,
+        "wires": [
+            [
+                "14bee8af.47aca7"
+            ]
+        ]
+    },
+    {
+        "id": "14bee8af.47aca7",
+        "type": "debug",
+        "z": "66772a78.2a2d54",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "false",
+        "x": 865,
+        "y": 37,
+        "wires": []
+    },
+    {
+        "id": "9dfb9c4a.33b24",
+        "type": "http in",
+        "z": "66772a78.2a2d54",
+        "name": "",
+        "url": "/api/ask",
+        "method": "get",
+        "swaggerDoc": "",
+        "x": 590,
+        "y": 80,
+        "wires": [
+            [
+                "6ed9002f.b3f4d"
+            ]
+        ]
+    },
+    {
+        "id": "6ed9002f.b3f4d",
+        "type": "template",
+        "z": "66772a78.2a2d54",
+        "name": "prompt",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "Are you sure you want to updated MAC address to: {{payload.macAddress}}?\n<br>\n\n<form action=\"/api/go\">\n<input type=\"hidden\" name=\"macAddress\" value=\"{{payload.macAddress}}\">\n<input type=\"submit\" value=\"yes\">\n</form> \n",
+        "x": 780,
+        "y": 79,
+        "wires": [
+            [
+                "3b215171.c9499e"
+            ]
+        ]
+    },
+    {
+        "id": "3b215171.c9499e",
+        "type": "http response",
+        "z": "66772a78.2a2d54",
+        "name": "",
+        "x": 943,
+        "y": 78,
+        "wires": []
+    },
+    {
+        "id": "de1861ae.72fc3",
+        "type": "http in",
+        "z": "66772a78.2a2d54",
+        "name": "update dev id",
+        "url": "/api/go",
+        "method": "get",
+        "swaggerDoc": "",
+        "x": 182,
+        "y": 142,
+        "wires": [
+            [
+                "c7f5b416.b95458",
+                "9b40f43e.34e568"
+            ]
+        ]
+    },
+    {
+        "id": "c7f5b416.b95458",
+        "type": "template",
+        "z": "66772a78.2a2d54",
+        "name": "success",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "Updated MAC address to: {{payload.macAddress}} !\n<br>\n\n\n<a href=\"http://hardware-proxy.mybluemix.net/ui/#/1\">Go back </a>",
+        "x": 348,
+        "y": 141,
+        "wires": [
+            [
+                "2e02a67f.7e3cca"
+            ]
+        ]
+    },
+    {
+        "id": "2e02a67f.7e3cca",
+        "type": "http response",
+        "z": "66772a78.2a2d54",
+        "name": "",
+        "x": 482,
+        "y": 140,
         "wires": []
     }
 ]
