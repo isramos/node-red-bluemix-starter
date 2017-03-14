@@ -16,7 +16,7 @@
         "node-red-contrib-ibmpush":"0.x",
         "node-red-contrib-bluemix-hdfs":"0.x",
         "node-red-nodes-cf-sqldb-dashdb":"0.x",
-        "node-red-contrib-npm":"0.x",
+        "node-red-contrib-npm":"1.x",
         "node-red-dashboard":"0.x"
     },
     "scripts": {
