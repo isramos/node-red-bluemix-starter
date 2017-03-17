@@ -126,8 +126,9 @@
         "id": "b1f865dd.9faf58",
         "type": "ui_group",
         "z": "",
-        "name": "Device Setup",
+        "name": "--- Device Setup ---",
         "tab": "8b6516b7.856e68",
+        "order": 1,
         "disp": true,
         "width": "6"
     },
@@ -142,17 +143,30 @@
         "id": "f5495b62.7dc9d8",
         "type": "ui_group",
         "z": "",
-        "name": "Default",
-        "tab": "df4d1feb.50d3a",
+        "name": "--- Sensor Offset Config ---",
+        "tab": "8b6516b7.856e68",
+        "order": 3,
         "disp": true,
         "width": "6"
     },
     {
-        "id": "df4d1feb.50d3a",
-        "type": "ui_tab",
+        "id": "541ee5e3.c6405c",
+        "type": "ui_group",
+        "name": "Group 1",
+        "tab": "",
+        "order": 1,
+        "disp": true,
+        "width": 6
+    },
+    {
+        "id": "ca5dce15.18b5f",
+        "type": "ui_group",
         "z": "",
-        "name": "Home",
-        "icon": "dashboard"
+        "name": "--- Device Status ---",
+        "tab": "8b6516b7.856e68",
+        "order": 2,
+        "disp": true,
+        "width": "6"
     },
     {
         "id": "6a4b2fc6.4652a",
@@ -365,7 +379,7 @@
         "format": "<!DOCTYPE html>\n<p><a href=\"{{msg.payload}}\" target=\"_blank\">View {{msg.devId}} in Watson IoT</a></p>",
         "storeOutMessages": true,
         "fwdInMessages": true,
-        "x": 695,
+        "x": 684,
         "y": 631,
         "wires": [
             []
@@ -578,7 +592,7 @@
                 "afc0aee6.17008",
                 "3fc9607d.411e8",
                 "5225c53f.c5027c",
-                "925b1ae5.2b31e8"
+                "f7538f60.d2e0e"
             ]
         ]
     },
@@ -614,11 +628,11 @@
         "func": "var t = msg.payload;\nmsg.payload = {};\nmsg.payload.temp = t;\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 533.5,
+        "x": 753.5,
         "y": 113,
         "wires": [
             [
-                "f7538f60.d2e0e"
+                "3b57232b.6725dc"
             ]
         ]
     },
@@ -627,7 +641,7 @@
         "type": "debug",
         "z": "991b8c7b.c4cd7",
         "name": "Hardware Reading",
-        "active": true,
+        "active": false,
         "console": "false",
         "complete": "payload",
         "x": 550,
@@ -649,11 +663,11 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": true,
-        "x": 673,
-        "y": 111,
+        "x": 616,
+        "y": 114,
         "wires": [
             [
-                "3b57232b.6725dc"
+                "925b1ae5.2b31e8"
             ]
         ]
     },
@@ -662,16 +676,16 @@
         "type": "function",
         "z": "991b8c7b.c4cd7",
         "name": "convert",
-        "func": "var sensorChoice = global.get('sensorType');\n\nif (sensorChoice === 'objectTemp' ){\n    var t = msg.payload.d.objectTemp;\n}\nelse {\n    var t = msg.payload.d.ambientTemp;\n}\n\nmsg.payload = parseFloat(t.toFixed(1));\nreturn msg;",
+        "func": "var sensorChoice = global.get('sensorType');\n\nif (sensorChoice === 'objectTemp' ){\n    var t = msg.payload.d.objectTemp;\n}\nelse {\n    var t = msg.payload.d.ambientTemp;\n}\n\nmsg.payload = parseFloat(t.toFixed(1));\nglobal.set('tlast', msg.payload); //store last rxd tmp\n\nvar offset = global.get(\"toffset\") || 0.0;\nmsg.payload = msg.payload + offset;\nmsg.payload = parseFloat(msg.payload.toFixed(1)); \n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "x": 376,
         "y": 113,
         "wires": [
             [
-                "925b1ae5.2b31e8",
                 "16951298.e5cafd",
-                "1e5c70e7.39939f"
+                "1e5c70e7.39939f",
+                "f7538f60.d2e0e"
             ]
         ]
     },
@@ -735,8 +749,8 @@
         "name": "",
         "server": "f86f139f.bd9c1",
         "client": "",
-        "x": 841.5,
-        "y": 111,
+        "x": 902.5,
+        "y": 113,
         "wires": []
     },
     {
@@ -767,15 +781,15 @@
         "id": "46d30f5d.3f7fa",
         "type": "ui_text",
         "z": "66772a78.2a2d54",
-        "group": "b1f865dd.9faf58",
+        "group": "ca5dce15.18b5f",
         "order": 6,
-        "width": "6",
-        "height": "2",
+        "width": "0",
+        "height": "0",
         "name": "",
-        "label": "Last Message Received On:",
+        "label": "Last Message:",
         "format": "{{msg.payload}}",
         "layout": "col-center",
-        "x": 565.5,
+        "x": 525.5,
         "y": 681,
         "wires": []
     },
@@ -802,7 +816,7 @@
         "type": "function",
         "z": "66772a78.2a2d54",
         "name": "",
-        "func": "msg.payload = new Date().toString();\nreturn msg;",
+        "func": "msg.payload = new Date().toString();\nmsg.payload = msg.payload.split('GMT');\nmsg.payload = msg.payload[0];\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "x": 320,
@@ -838,8 +852,8 @@
         ],
         "payload": "",
         "topic": "",
-        "x": 451.5,
-        "y": 807,
+        "x": 380,
+        "y": 860,
         "wires": [
             [
                 "43134ae.ea14db4"
@@ -857,8 +871,8 @@
         "repeat": "",
         "crontab": "",
         "once": true,
-        "x": 301,
-        "y": 807,
+        "x": 229.5,
+        "y": 860,
         "wires": [
             [
                 "47472262.5c048c"
@@ -873,8 +887,8 @@
         "func": "global.set('sensorType', msg.payload);\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 600,
-        "y": 807,
+        "x": 528.5,
+        "y": 860,
         "wires": [
             []
         ]
@@ -883,7 +897,7 @@
         "id": "6c528444.a6fc0c",
         "type": "ui_text",
         "z": "66772a78.2a2d54",
-        "group": "b1f865dd.9faf58",
+        "group": "ca5dce15.18b5f",
         "order": 7,
         "width": "3",
         "height": "1",
@@ -899,7 +913,7 @@
         "id": "4c0a61b6.95b5a",
         "type": "ui_text",
         "z": "66772a78.2a2d54",
-        "group": "b1f865dd.9faf58",
+        "group": "ca5dce15.18b5f",
         "order": 8,
         "width": "3",
         "height": "1",
@@ -916,11 +930,11 @@
         "type": "function",
         "z": "66772a78.2a2d54",
         "name": "ambient",
-        "func": "\nvar t = msg.payload.d.ambientTemp;\n\nmsg.payload = {};\nmsg.payload = parseFloat(t);\n\n\nreturn msg;",
+        "func": "\nvar t = msg.payload.d.ambientTemp;\n\nmsg.payload = {};\nmsg.payload = parseFloat(t.toFixed(1));\n\nvar offset = global.get(\"toffset\") || 0.0;\nmsg.payload = msg.payload + offset;\n\nmsg.payload = parseFloat(msg.payload.toFixed(1));\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "x": 323,
-        "y": 719,
+        "y": 717,
         "wires": [
             [
                 "6c528444.a6fc0c"
@@ -932,7 +946,7 @@
         "type": "function",
         "z": "66772a78.2a2d54",
         "name": "object",
-        "func": "\nvar t = msg.payload.d.objectTemp;\n\nmsg.payload = {};\nmsg.payload = parseFloat(t);\n\n\nreturn msg;",
+        "func": "\nvar t = msg.payload.d.objectTemp;\n\nmsg.payload = {};\nmsg.payload = parseFloat(t.toFixed(1));\n\nvar offset = global.get(\"toffset\") || 0.0;\nmsg.payload = msg.payload + offset;\nmsg.payload = parseFloat(msg.payload.toFixed(1));\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "x": 315,
@@ -1027,7 +1041,7 @@
         "type": "function",
         "z": "66772a78.2a2d54",
         "name": "globals",
-        "func": "var apiurl = \"http://hardware-proxy.mybluemix.net/red/\";\n\nglobal.set(\"apiurl\", apiurl);\n\nreturn msg;",
+        "func": "var apiurl = \"http://{{app-url-goes-here}}.mybluemix.net/red/\";\n\nglobal.set(\"apiurl\", apiurl);\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "x": 251,
@@ -1105,7 +1119,7 @@
         "active": true,
         "console": "false",
         "complete": "false",
-        "x": 640,
+        "x": 634,
         "y": 253,
         "wires": []
     },
@@ -1152,7 +1166,7 @@
         "authentication": "quickstart",
         "apiKey": "",
         "inputType": "evt",
-        "deviceId": "b0b448bf4b84",
+        "deviceId": "b0b448b95007",
         "applicationId": "",
         "deviceType": "+",
         "eventType": "+",
@@ -1203,7 +1217,7 @@
         "type": "function",
         "z": "f6943f15.08708",
         "name": "C to F",
-        "func": "var sensorChoice = global.get('sensorType');\n\nif (msg.payload.d === undefined)\n    return null;\nif (msg.payload.d.objectTemp === undefined)\n    return null;   \nif (msg.payload.d.ambientTemp === undefined)\n    return null; \n    \n\nvar oT = parseFloat(msg.payload.d.objectTemp) ;\nvar aT = parseFloat(msg.payload.d.ambientTemp);\n\nmsg.payload.d.objectTemp = (oT * 9 / 5 + 32);\nmsg.payload.d.ambientTemp = (aT * 9 / 5 + 32);\n\nreturn msg;",
+        "func": "var sensorChoice = global.get('sensorType');\n\nif (msg.payload.d === undefined)\n{\n    msg.payload.stat = \"missing d\";\n    return [null, msg];\n}\nif (msg.payload.d.objectTemp === undefined && msg.payload.d.object_temp === undefined )\n{\n    msg.payload.stat = \"missing d.objectTemp and object_temp\";\n    return [null, msg];\n}  \nif (msg.payload.d.ambientTemp === undefined && msg.payload.d.ambient_temp === undefined)\n{\n    msg.payload.stat = \"missing d.ambientTemp and ambient_temp\";\n    return [null, msg];\n}\n\nif (msg.payload.d.object_temp !== undefined)\nmsg.payload.d.objectTemp = msg.payload.d.object_temp;\n \nif (msg.payload.d.ambient_temp !== undefined)\nmsg.payload.d.ambientTemp = msg.payload.d.ambient_temp;  \n\nvar oT = parseFloat(msg.payload.d.objectTemp) ;\nvar aT = parseFloat(msg.payload.d.ambientTemp);\n\nmsg.payload.d.objectTemp = (oT * 9 / 5 + 32);\nmsg.payload.d.ambientTemp = (aT * 9 / 5 + 32);\n\nreturn [msg, null];",
         "outputs": 1,
         "noerr": 0,
         "x": 369.5,
@@ -1315,7 +1329,7 @@
         "fieldType": "msg",
         "format": "handlebars",
         "syntax": "mustache",
-        "template": "Updated MAC address to: {{payload.macAddress}} !\n<br>\n\n\n<a href=\"http://hardware-proxy.mybluemix.net/ui/#/1\">Go back </a>",
+        "template": "Updated MAC address to: {{payload.macAddress}} !\n<br>\n\n\n<a href=\"/ui/#/1\">Go back </a>",
         "x": 348,
         "y": 141,
         "wires": [
@@ -1332,5 +1346,174 @@
         "x": 482,
         "y": 140,
         "wires": []
+    },
+    {
+        "id": "16838a6.a654c76",
+        "type": "ui_button",
+        "z": "66772a78.2a2d54",
+        "name": "CLEAR offset",
+        "group": "f5495b62.7dc9d8",
+        "order": 2,
+        "width": "3",
+        "height": "1",
+        "label": "CLR",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "clear",
+        "payloadType": "str",
+        "topic": "",
+        "x": 199,
+        "y": 950,
+        "wires": [
+            [
+                "9ac9cb87.093488"
+            ]
+        ]
+    },
+    {
+        "id": "6d3dd335.35a4dc",
+        "type": "ui_button",
+        "z": "66772a78.2a2d54",
+        "name": "SET current as 45F",
+        "group": "f5495b62.7dc9d8",
+        "order": 3,
+        "width": "3",
+        "height": "1",
+        "label": "SET",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "set",
+        "payloadType": "str",
+        "topic": "",
+        "x": 211.5,
+        "y": 989,
+        "wires": [
+            [
+                "9ac9cb87.093488"
+            ]
+        ]
+    },
+    {
+        "id": "9ac9cb87.093488",
+        "type": "function",
+        "z": "66772a78.2a2d54",
+        "name": "",
+        "func": "var offset = 0;\nif (msg.payload === 'clear')\n{\n    global.set(\"toffset\", offset);\n    msg.payload = offset;\n}\nelse if(msg.payload === 'set')\n{\n    var curr = global.get('tlast') || 45.0;\n    offset = 45.0 - curr;\n    offset = parseFloat(offset.toFixed(1));\n    global.set(\"toffset\", offset );\n    msg.payload = offset;\n}\nelse if(msg.payload === 'read'){\n    msg.payload = global.get(\"toffset\") || 0.0;\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 402.5,
+        "y": 959,
+        "wires": [
+            [
+                "a98fd89a.4a1cd8"
+            ]
+        ]
+    },
+    {
+        "id": "a98fd89a.4a1cd8",
+        "type": "ui_text",
+        "z": "66772a78.2a2d54",
+        "group": "f5495b62.7dc9d8",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Current Offset",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 560,
+        "y": 960,
+        "wires": []
+    },
+    {
+        "id": "852d3411.3844b8",
+        "type": "inject",
+        "z": "66772a78.2a2d54",
+        "name": "init",
+        "topic": "",
+        "payload": "objectTemp",
+        "payloadType": "str",
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "x": 227.5,
+        "y": 913,
+        "wires": [
+            [
+                "9ac9cb87.093488"
+            ]
+        ]
+    },
+    {
+        "id": "7d25f0ae.4696d",
+        "type": "inject",
+        "z": "f6943f15.08708",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 188.5,
+        "y": 273,
+        "wires": [
+            [
+                "c2828652.c5ec68"
+            ]
+        ]
+    },
+    {
+        "id": "9fc54a1c.997248",
+        "type": "inject",
+        "z": "f6943f15.08708",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 191,
+        "y": 311,
+        "wires": [
+            [
+                "c6df23c1.82d44"
+            ]
+        ]
+    },
+    {
+        "id": "c2828652.c5ec68",
+        "type": "function",
+        "z": "f6943f15.08708",
+        "name": "20C",
+        "func": "msg.payload = {\n    \"d\": {\n        \"ambientTemp\": \"20.1\",\n        \"objectTemp\": \"20.5\"\n    }\n};\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 273,
+        "wires": [
+            [
+                "84db3686.85b328"
+            ]
+        ]
+    },
+    {
+        "id": "c6df23c1.82d44",
+        "type": "function",
+        "z": "f6943f15.08708",
+        "name": "23C",
+        "func": "msg.payload = {\n    \"d\": {\n        \"ambientTemp\": 23.1,\n        \"objectTemp\": 23.3\n    }\n};\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 318,
+        "y": 313,
+        "wires": [
+            [
+                "84db3686.85b328"
+            ]
+        ]
     }
 ]
